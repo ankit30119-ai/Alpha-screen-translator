@@ -1,0 +1,50 @@
+package com.alpha.screentranslator.model
+
+import android.graphics.Rect
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+enum class TranslationMode(val title: String, val subtitle: String) {
+    FULL_SCREEN("Full Screen", "Translate all visible text on screen"),
+    SELECTED_AREA("Selected Area", "Drag a crop box over a specific region"),
+    INSTANT_LIVE("Instant Auto", "Auto-translate every 2.5s when screen changes"),
+    SCREENSHOT("Screenshot", "Pick any image or screenshot from gallery"),
+    TEXT_SELECTION("Text Select", "Highlight text in any app & tap 'Alpha Translate'")
+}
+
+enum class SourceScript(val code: String, val displayName: String, val flag: String) {
+    AUTO_LATIN("auto", "Auto (English / European)", "🌐"),
+    JAPANESE("ja", "Japanese (日本語)", "🇯🇵"),
+    KOREAN("ko", "Korean (한국어)", "🇰🇷"),
+    CHINESE("zh", "Chinese (中文)", "🇨🇳"),
+    DEVANAGARI("hi", "Hindi / Sanskrit (हिन्दी)", "🇮🇳")
+}
+
+data class TranslatedBlock(
+    val id: String,
+    val originalText: String,
+    val translatedHindiText: String,
+    val boundingBox: Rect,
+    val detectedLanguageCode: String
+)
+
+@Entity(tableName = "translation_history")
+data class TranslationHistoryItem(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val sourceText: String,
+    val hindiText: String,
+    val sourceLang: String,
+    val timestamp: Long = System.currentTimeMillis(),
+    val isFavorite: Boolean = false
+)
+
+data class AppPreferences(
+    val isDarkTheme: Boolean = true,
+    val selectedMode: TranslationMode = TranslationMode.FULL_SCREEN,
+    val selectedScript: SourceScript = SourceScript.AUTO_LATIN,
+    val floatingButtonSizeDp: Float = 56f,
+    val floatingButtonOpacity: Float = 0.92f,
+    val translationSpeedMs: Long = 2500L,
+    val preserveLayoutOverlay: Boolean = true,
+    val autoCopyHindi: Boolean = false
+)
